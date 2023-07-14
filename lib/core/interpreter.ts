@@ -1,5 +1,5 @@
 "use server"
-import { getCompletion } from './chat/config'
+import { getCompletion } from "./chat/completion"
 import { processChat } from './chat/interpreter'
 import { COMMANDS } from './commands'
 import { Project } from './types'
@@ -18,18 +18,8 @@ async function executeCommand(commandString: string, project: Project) {
 
   const commandArguments = commandString.split(' ').slice(1)
 
-  const commandArgumentsObject = commandArguments.reduce((acc, arg) => {
-    const [key, value] = arg.split('=')
-    return { ...acc, [key]: value }
-  }, {})
-
-  const args = {
-    ...commandArgumentsObject,
-    project
-  } as any
-  console.log(args)
   try {
-    const result = await command.handler(args)
+    const result = await command.handler(project)(commandArguments)
     return result
   } catch (error) {
     if (error instanceof Error) {

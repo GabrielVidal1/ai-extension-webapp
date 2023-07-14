@@ -1,12 +1,10 @@
 'use client'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { processChat } from '@/lib/core/chat/interpreter'
 import { processPrompt, promptBuilder } from '@/lib/core/interpreter'
 import { Project } from '@/lib/core/types'
-import { functionFormatResult, nanoid } from '@/lib/utils'
-import React, { use, useState } from 'react'
-import { ReactMarkdown } from 'react-markdown/lib/react-markdown'
+import { functionFormatResult } from '@/lib/utils'
+import React, { useState } from 'react'
 
 const project: Project = {
   id: 'test',
@@ -56,7 +54,7 @@ export default function IndexPage() {
     <div className="flex">
       <div className="flex flex-1 flex-col gap-2">
         <Textarea
-          className="h-56 w-full"
+          className="m-3 h-56 w-full"
           placeholder="Type your message here..."
           value={prompt}
           onChange={e => setPrompt(e.target.value)}

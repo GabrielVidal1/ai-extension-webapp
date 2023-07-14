@@ -23,13 +23,8 @@ function findFile(directory: string, fileName: string): string | null {
   return null;
 }
 
-interface ReadFileArgs {
-  fileName: string;
-  project: Project;
-}
-
-const readFile = async ({ fileName, project }: ReadFileArgs) => {
-
+const readFile = (project: Project) => async (args: string[]) => {
+  const fileName = args[0];
   const filePath = findFile(project.path, fileName);
 
   if (!filePath || !fs.existsSync(filePath)) {

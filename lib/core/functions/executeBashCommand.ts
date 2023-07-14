@@ -4,7 +4,7 @@ export const executeBashCommand = ({ command }: { command: string }): Promise<st
   return new Promise((resolve, reject) => {
     exec(command, (error, stdout, stderr) => {
       if (error) {
-        reject(stderr);
+        resolve(stderr);
       } else {
         resolve(stdout);
       }
