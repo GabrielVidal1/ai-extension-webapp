@@ -1,5 +1,5 @@
-import executeBashCommand from './executeBashCommand'
-import readFile from './readFile'
+import executeBashCommand from './commands/executeBashCommand'
+import readFile from './commands/readFile'
 
 export const COMMANDS = [
   readFile,

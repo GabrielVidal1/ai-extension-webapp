@@ -1,5 +1,5 @@
-import { Project } from '../types'
-import { executeBashCommand as executeBashCommandFunc } from '../functions/executeBashCommand'
+import { Project } from '../../types'
+import { executeBashCommand as executeBashCommandFunc } from '../../functions/bash'
 
 const TEMPLATE = `$ {{command}}\n> {{commandResult}}\n\n===\n`
 
@@ -34,7 +34,7 @@ const commandDescription = {
 
 const handler = {
   function: commandDescription,
-  handler: executeBashCommand
+  handler: executeBashCommand,
 }
 
 export default handler

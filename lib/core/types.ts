@@ -3,3 +3,9 @@ export interface Project {
   name: string
   path: string
 }
+
+export interface CustomCommand {
+  name: string
+  content: string
+  requiredCommands: string[]
+}

@@ -13,8 +13,7 @@ export const executeBashCommand = ({ command }: { command: string }): Promise<st
 };
 
 const openaiFunction = {
-  name: 'execute_bash_command',
-  short: 'bash',
+  name: 'bash',
   description: 'Execute a bash command',
   parameters: {
     type: 'object',

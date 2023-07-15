@@ -1,49 +1,47 @@
-"use server"
-import { getCompletion } from "./chat/completion"
+'use server'
+import { getCompletion } from './chat/completion'
 import { processChat } from './chat/interpreter'
 import { COMMANDS } from './commands'
 import { Project } from './types'
+import { CUSTOM_COMMANDS, executeCommand } from './commands/execution'
 
-async function executeCommand(commandString: string, project: Project) {
-  console.log(commandString)
-
-  // Remove the leading slash
-  const commandName = commandString.split(' ')[0].slice(1)
-
-  const command = COMMANDS.find(c => c.function.name === commandName)
-
-  if (!command) {
-    return `Command ${commandName} not found`
-  }
-
-  const commandArguments = commandString.split(' ').slice(1)
-
-  try {
-    const result = await command.handler(project)(commandArguments)
-    return result
-  } catch (error) {
-    if (error instanceof Error) {
-      return `Error executing command ${commandName}: ${error.message}`
-    }
-    return `Error executing command ${commandName}`
-  }
-}
-
-export async function promptBuilder(prompt: string, project: Project) {
+export async function promptBuilder(
+  prompt: string,
+  project: Project,
+  preview = false
+) {
   const lines = prompt.split('\n')
-
-  let result = ''
 
   const commands = []
   let functionCall = ''
 
   let context = ''
 
+  let result = ''
+
   for (const line of lines) {
     if (line.startsWith('/')) {
+      const command = line.split(' ')[0].slice(1)
+      if (CUSTOM_COMMANDS.find(c => c.name === command)) {
+        const customCommand = CUSTOM_COMMANDS.find(c => c.name === command)
+        if (customCommand) {
+          console.log(customCommand)
+        }
+      }
+
       commands.push(line)
-      const re = await executeCommand(line, project)
-      context += re
+      const commandString = line.slice(1)
+      const commandName = line.split(' ')[0].slice(1)
+      const commandArguments = commandString.split(' ').slice(1)
+
+      if (!preview) {
+        const re = await executeCommand(commandName, commandArguments, project)
+        context += re
+      } else {
+        context += `Will execute command: ${commandName}(${commandArguments.join(
+          ', '
+        )})\n`
+      }
 
       // result += re
     } else if (line.startsWith('>')) {
@@ -53,20 +51,34 @@ export async function promptBuilder(prompt: string, project: Project) {
     }
     result += '\n'
   }
-
+  // Results is an array of completion
   return { context, prompt: result, commands, functionCall }
 }
 
-export async function processPrompt(
-  prompt: string,
-  project: Project
-) {
-  const { prompt: fullPrompt, context, functionCall } = await promptBuilder(prompt, project)
-
-  const completion = await getCompletion(context, fullPrompt, functionCall)
-
-  const result = await processChat(completion)
-
-  return result
+export async function preprocessPrompt(prompt: string, project: Project) {
+  const subPrompts = prompt.split('===\n')
+  const promptBuilds = await Promise.all(
+    subPrompts.map(p => promptBuilder(p, project))
+  )
+  return promptBuilds
 }
 
+export async function processPrompt(prompt: string, project: Project) {
+  const promptBuilds = await preprocessPrompt(prompt, project)
+
+  const messages = []
+  const results = []
+  for (const promptBuild of promptBuilds) {
+    const completion = await getCompletion({ ...promptBuild })
+    messages.push(completion.choices[0].message)
+
+    const result = await processChat(completion)
+    results.push(result)
+  }
+
+  return results
+}
+
+export async function getAvailableCommands() {
+  return COMMANDS
+}

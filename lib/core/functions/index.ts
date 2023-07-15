@@ -1,4 +1,4 @@
-import executeBashCommand from "./executeBashCommand";
+import executeBashCommand from "./bash";
 import writeFile from "./writeFile";
 
 export const FUNCTIONS = [

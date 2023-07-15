@@ -1,7 +1,11 @@
 'use client'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { processPrompt, promptBuilder } from '@/lib/core/interpreter'
+import {
+  preprocessPrompt,
+  processPrompt,
+  promptBuilder
+} from '@/lib/core/interpreter'
 import { Project } from '@/lib/core/types'
 import { functionFormatResult } from '@/lib/utils'
 import React, { useState } from 'react'
@@ -24,14 +28,12 @@ export default function IndexPage() {
   const generateContext = async () => {
     setIsLoading(true)
     try {
-      const {
-        context: res,
-        prompt: p,
-        functionCall
-      } = await promptBuilder(prompt, project)
+      const prompts = await preprocessPrompt(prompt, project)
 
-      setGeneratedContext(res + '\n' + p)
-      setFunctionCall(functionCall)
+      setGeneratedContext(
+        prompts.map(prompt => prompt.context + prompt.prompt).join('\n')
+      )
+      setFunctionCall(prompts.map(prompt => prompt.functionCall).join(' > '))
     } catch (e) {
       console.log(e)
     }
@@ -59,7 +61,6 @@ export default function IndexPage() {
           value={prompt}
           onChange={e => setPrompt(e.target.value)}
         ></Textarea>
-        {isLoading && <div>Loading...</div>}
         <div className="flex justify-between">
           <Button onClick={generateContext}>Generate Context</Button>
 
@@ -70,7 +71,8 @@ export default function IndexPage() {
         </div>
         <p className="whitespace-pre-wrap">{generatedContext}</p>
       </div>
-      <div className="mt-4 flex-1">
+      <div className="mt-4 flex flex-1 flex-col gap-2">
+        {isLoading && <div>Loading...</div>}
         <div className="whitespace-pre-wrap">{result}</div>
       </div>
     </div>

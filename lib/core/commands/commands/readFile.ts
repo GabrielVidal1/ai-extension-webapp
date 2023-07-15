@@ -1,6 +1,6 @@
 import path from "path";
 import fs from "fs";
-import { Project } from "../types";
+import { Project } from "../../types";
 
 const TEMPLATE = `Content of the file \`{{filePath}}\`:\n===\n{{fileContents}}\n===\n`;
 
@@ -58,6 +58,7 @@ const commandDescription = {
 const handler = {
   function: commandDescription,
   handler: readFile,
+  short: 'read',
 }
 
 export default handler;

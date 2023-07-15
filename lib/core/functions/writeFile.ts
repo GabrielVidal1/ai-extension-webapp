@@ -15,7 +15,6 @@ async function writeFile({ filename, folder, content }: WriteFileArgs) {
 
 const openaiFunction = {
   name: "write_file",
-  short: 'write',
   description: "Write the content of a file",
   parameters: {
     type: "object",
@@ -40,6 +39,7 @@ const openaiFunction = {
 const handler = {
   function: openaiFunction,
   handler: writeFile,
+  short: 'write',
 }
 
 export default handler;

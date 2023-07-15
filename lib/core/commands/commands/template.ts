@@ -1,4 +1,4 @@
-import { Project } from '../types'
+import { Project } from '../../types'
 
 const TEMPLATE = `Custom Command Result for arg \`{{customArg}}\`:\n===\n{{commandResult}}\n===\n`
 

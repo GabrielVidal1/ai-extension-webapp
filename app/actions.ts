@@ -7,6 +7,8 @@ import { kv } from '@vercel/kv'
 import { auth } from '@/auth'
 import { type Chat } from '@/lib/types'
 import { USER_ID } from '@/lib/constants'
+import { nanoid } from 'nanoid'
+import { CreateChatCompletionResponse, ChatCompletionResponseMessage } from 'openai'
 
 export async function getChats() {
   try {
@@ -84,4 +86,30 @@ export async function shareChat(chat: Chat) {
   await kv.hmset(`chat:${chat.id}`, payload)
 
   return payload
+}
+
+
+export async function createChat(completion: CreateChatCompletionResponse, messages: ChatCompletionResponseMessage[]) {
+  // const title = content.substring(0, 100)
+  const id = nanoid()
+  const createdAt = Date.now()
+  const path = `/chat/${id}`
+  const payload = {
+    id,
+    userId: USER_ID,
+    createdAt,
+    path,
+    messages: [
+      ...messages,
+      {
+        content: completion,
+        role: 'assistant'
+      }
+    ]
+  }
+  await kv.hmset(`chat:${id}`, payload)
+  await kv.zadd(`user:chat:${USER_ID}`, {
+    score: createdAt,
+    member: `chat:${id}`
+  })
 }
