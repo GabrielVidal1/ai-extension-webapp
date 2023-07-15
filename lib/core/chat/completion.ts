@@ -34,7 +34,7 @@ export async function getCompletion({ context, prompt, functionCall, maxTokens =
     const result = await openai.createChatCompletion({
       model: 'gpt-3.5-turbo-0613',
       messages,
-      functions: OPENAI_FUNCTIONS,
+      functions: function_call ? OPENAI_FUNCTIONS : undefined,
       max_tokens: maxTokens,
       function_call,
     });

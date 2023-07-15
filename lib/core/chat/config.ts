@@ -6,4 +6,3 @@ export const configuration = new Configuration({
 
 export const openai = new OpenAIApi(configuration)
 
-

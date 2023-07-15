@@ -7,7 +7,7 @@ import {
   promptBuilder
 } from '@/lib/core/interpreter'
 import { Project } from '@/lib/core/types'
-import { functionFormatResult } from '@/lib/utils'
+import { functionFormatResult } from '@/lib/functionFormatResult'
 import React, { useState } from 'react'
 
 const project: Project = {
@@ -44,7 +44,7 @@ export default function IndexPage() {
     setIsLoading(true)
     try {
       const res = await processPrompt(prompt, project)
-      const ress = functionFormatResult(res)
+      const ress = res.map(r => functionFormatResult(r)).join('\n')
       setResult(ress)
     } catch (e) {
       console.log(e)

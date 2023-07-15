@@ -1,7 +1,6 @@
 import { clsx, type ClassValue } from 'clsx'
 import { customAlphabet } from 'nanoid'
 import { twMerge } from 'tailwind-merge'
-import { processPrompt } from './core/interpreter'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -43,14 +42,4 @@ export function formatDate(input: string | number | Date): string {
   })
 }
 
-export function functionFormatResult(
-  result: Awaited<ReturnType<typeof processPrompt>>
-) {
-  if ('function_call' in result) {
-    const { function_call, functionResult } = result
 
-    return `$${function_call?.name}(${function_call?.arguments})\n${functionResult}`
-  }
-
-  return result.content ?? ''
-}
